@@ -29,10 +29,11 @@ def randomBoid():
 
 # creates velocity based on rules and applies to boid movement
 def moveBoid(boid):
-    w1 = .00005
+    w1 = .0001
     w2 = 1
     w3 = 1
     v1 = w1 * flyTowardCenter(boid)
+    print(v1)
     # v2 = w2 * keepDistance(boid)
     matchVelocity(boid)
     boid.velocity = boid.velocity + v1
@@ -47,8 +48,11 @@ def flyTowardCenter(boid):
     for b in getNearbyBoids(boid):
         if b is not boid:
                 total = total + b.pos
-    center = total / (len(boids) - 1)
-    return boid.pos - center
+    try:
+        center = total / (len(boids) - 1)
+    except:
+        center = boid.pos
+    return center - boid.pos
 
 def keepDistance(boid):
     pass
@@ -72,12 +76,12 @@ def drawBoids(graphics):
     graphics.window.fill(BLACK)
     [graphics.drawBoid(i) for i in boids]
     graphics.flip()
-    graphics.tick(120)
+    graphics.tick(60)
 
 def main():
     # initialize graphics context and creates array of 100 random boids
     g = Graphics(SW, SH)
-    [boids.append(randomBoid()) for _ in range(10)] 
+    [boids.append(randomBoid()) for _ in range(20)] 
     for i in boids:
         i.color = randomColor() 
     
