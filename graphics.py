@@ -4,6 +4,7 @@ from math import *
 pygame.init()
  
 BLUE = (0, 255, 255)
+RED = (255, 0, 0)
  
 def getBoidPoints():
     return [(30, 0), (-10, 10), (-10, -10)]
@@ -23,17 +24,18 @@ class Graphics:
         self.height = sh
         self.window = pygame.display.set_mode((sw, sh))
         self.clock = pygame.time.Clock()
+        self.event = pygame.event
  
     def drawBoid(self, boid, flip=False):
-        points = rotate(boid.dir, getBoidPoints(), boid.pos)
-        pygame.draw.polygon(self.window, BLUE, points, 3)
+        points = rotate(boid.getDirection(), getBoidPoints(), boid.pos)
+        pygame.draw.polygon(self.window, boid.color, points, 3)
         if flip:
             self.flip()
  
     def flip(self):
         pygame.display.flip()
  
-    def tick(self):
-        self.clock.tick()
+    def tick(self, fr=0):
+        self.clock.tick(fr)
 
     
