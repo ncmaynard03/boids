@@ -1,4 +1,5 @@
 from math import *
+import cmath
 import numpy as np
  
 # Value weights
@@ -8,11 +9,9 @@ speedScalar = 1
 BLUE = (0, 255, 255)
 RED = (255, 50, 50)
 
-
-
 def toVelocity(speed, direction):
-    theta = radians(direction)
-    return np.array([float(speed * cos(theta)), float(speed * sin(theta))])
+    phi = radians(direction)
+    return cmath.rect(speed, phi)
 
 
 class Boid:
@@ -26,4 +25,4 @@ class Boid:
     # moves boid, rotates to match direction of movement
 
     def getDirection(self):
-        return degrees(np.arctan2(*self.velocity[::-1]))
+        return degrees(cmath.polar(self.velocity)[1])

@@ -1,4 +1,5 @@
 import pygame
+import cmath
 from math import *
  
 pygame.init()
@@ -7,15 +8,13 @@ BLUE = (0, 255, 255)
 RED = (255, 0, 0)
  
 def getBoidPoints():
-    return [(15, 0), (-5, 5), (-5, -5)]
+    return [complex(3, 0), complex(-1, 1), complex(-1, -1)]
  
 def rotate(deg, points: list, origin):
     newPoints = []
     for point in points:
-        x, y = point
-        rad = sqrt(x**2+y**2)
-        theta = radians(degrees(atan2(y, x)) + deg)
-        newPoints.append((rad * cos(theta) + origin[0], rad * sin(theta) + origin[1]))
+        rotation = complex(cos(radians(deg)), sin(radians(deg)))
+        newPoints.append(origin + point * rotation)
     return newPoints
  
 class Graphics:
@@ -28,7 +27,7 @@ class Graphics:
  
     def drawBoid(self, boid, flip=False):
         points = rotate(boid.getDirection(), getBoidPoints(), boid.pos)
-        pygame.draw.polygon(self.window, boid.color, points, 3)
+        pygame.draw.polygon(self.window, boid.color, [(i.real, i.imag) for i in points], 3)
         if flip:
             self.flip()
  

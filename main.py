@@ -6,7 +6,7 @@ from boid import *
 from time import *
 
 # Screen dimensions 
-SW, SH = 1200, 600
+SW, SH = 1300, 700
 
 BLUE = (0, 255, 255)
 RED = (255, 50, 50)
@@ -17,7 +17,7 @@ BLACK = (0, 0, 0)
 
 # ruleset weights
 
-
+f = 0
 boids = []
 
 def randomColor():
@@ -25,15 +25,13 @@ def randomColor():
  
 # creates a boid with a random location and direction
 def randomBoid():
-    pos = 0 + 0j
-    pos.real = random.randint(0, SW)
-    pos.imag = random.randint(0, SH)
+    pos = complex(random.randint(0, SW), random.randint(0, SH))
     return Boid(pos, random.randint(0, 360))
 
 # creates velocity based on rules and applies to boid movement
 def moveBoids():
     # Scale variables
-    speed = .001
+    speed = .01
     w1 = 1 * speed
     w2 = 1 * speed
     w3 = 1 * speed
@@ -45,44 +43,59 @@ def moveBoids():
         
         nearby = getNearbyBoids(boid, state)
 
-        v1 = w1 * flyTowardCenter(boid, state)
+        v1 = w1 * flyTowardCenter(boid, nearby)
         v2 = w2 * keepDistance(boid, nearby)
         v3 = w3 * matchVelocity(boid, nearby)
+      
         boid.velocity = boid.velocity + v1 + v2 + v3
         boid.pos = (boid.pos + boid.velocity)
     
+
     # # # Wraps boids when they go off screen
-    #     boid.pos[1] = boid.pos[1] % np.double(SH)
-    #     boid.pos[0] = boid.pos[0] % np.double(SW)
+        boid.pos = complex(boid.pos.real % SW, boid.pos.imag % SH)
+
 
 def flyTowardCenter(boid, state):
     c = 0+0j
+
+    if len(state) <= 1:
+        return c
+
     for b in state:
         if b is boid:
             continue
         c += b.pos
-    if len(state) > 1:
-        c /= (len(state) - 1)
-    else:
-        c = boid.pos
+    c /= (len(state) - 1)
     return (c - boid.pos) / 100
+
 
 def keepDistance(boid, state):
     c = 0+0j
     for b in state:
         if b is boid:
             continue
-        if abs(boid - b) < 100:
+        if abs(boid.pos - b.pos) < 20:
             c -= b.pos - boid.pos
+        if f % 60==0:
+            if c.real < .1*SW or c.real > 9*SW \
+            or c.imag < .1*SH or c.imag > .9*SH:
+                    
+
     return c
 
 def matchVelocity(boid, state):
     vel = 0+0j
+    
+    if len(state) <= 1:
+        return vel
+
     for b in state:
         if b is boid:
             continue
         vel += b.velocity
-    return vel / (len(state) - 1)
+
+    return vel / (len(state) - 1) / 8
+
 
 def getNearbyBoids(b1, state):
     nearby = []
@@ -92,10 +105,6 @@ def getNearbyBoids(b1, state):
                 nearby.append(b2)
     return nearby
 
-def getDistance(p1, p2):
-    x1, y1, x2, y2 = *p1, *p2
-    return sqrt((x2 - x1)**2 + (y2 - y1)**2)
-
 def drawBoids(graphics):
     graphics.window.fill(BLACK)
     [graphics.drawBoid(i) for i in boids]
@@ -104,19 +113,21 @@ def drawBoids(graphics):
 def main():
     # initialize graphics context and creates array of 100 random boids
     g = Graphics(SW, SH)
-    [boids.append(randomBoid()) for _ in range(10)] 
+    [boids.append(randomBoid()) for _ in range(50)] 
     
-    # for i in boids:
-    #     i.color = randomColor() 
+    for i in boids:
+        i.color = randomColor() 
 
     # game loop
-    start = pygame.time.get_ticks()
-    while(pygame.time.get_ticks() - start < 10000):
-        
+    # start = pygame.time.get_ticks()
+    # while(pygame.time.get_ticks() - start < 10000):
+    run = True
+    while(run): 
+        global f
+        f+=1
         moveBoids()
         drawBoids(g)
-        g.tick(60)
-
+        g.tick(30)
         for event in g.event.get():
             if event.type == pygame.QUIT:
                 run = False
