@@ -2,7 +2,7 @@ from math import *
 import numpy as np
  
 # Value weights
-speedScalar = 3
+speedScalar = 1
 
 
 BLUE = (0, 255, 255)
@@ -17,8 +17,8 @@ def toVelocity(speed, direction):
 
 class Boid:
     #defines from screen position and angle
-    def __init__(self, xPos=0, yPos=0, direction=0):
-        self.pos = np.array([xPos, yPos]) # position on the screen
+    def __init__(self, pos, direction=0):
+        self.pos = pos # position on the screen in complex form
         self.velocity = toVelocity(speedScalar, direction)
         self.visibility = 100 # distance
         self.color = RED

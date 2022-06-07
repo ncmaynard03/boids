@@ -7,7 +7,7 @@ BLUE = (0, 255, 255)
 RED = (255, 0, 0)
  
 def getBoidPoints():
-    return [(30, 0), (-10, 10), (-10, -10)]
+    return [(15, 0), (-5, 5), (-5, -5)]
  
 def rotate(deg, points: list, origin):
     newPoints = []
